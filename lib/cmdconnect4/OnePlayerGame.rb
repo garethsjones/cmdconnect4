@@ -17,22 +17,32 @@ class OnePlayerGame
     cpu_name = ask("CPU name (X): ")
     opponent = TreeHuggingOpponent.new(board, Counter::YELLOW)
     
+    coin_toss = rand(0..1)
+    
+    if coin_toss == 0
+      puts "#{cpu_name} will go first"
+    else
+      puts "#{player_1_name} will go first"
+    end
+    
     puts "\n" + board.to_s
     
     for turn in 1..((Board::HEIGHT * Board::WIDTH) / 2)
+      
+      if (coin_toss == 0)
+        if opponent_turn(cpu_name, opponent, board)
+          return
+        end
+      end
       
       if take_turn(player_1, opponent, board)
         return
       end
       
-      column = opponent.next_move
-      puts "#{cpu_name}'s turn: #{column}"
-      result = board.play(column, Counter::YELLOW)
-      puts "\n" + board.to_s
-      
-      if result
-        puts "#{cpu_name} is the winner!!"
-        return true
+      if (coin_toss == 1)
+        if opponent_turn(cpu_name, opponent, board)
+          return
+        end
       end
       
     end
@@ -51,6 +61,20 @@ class OnePlayerGame
     end
     
     opponent.my_move column
+    return false
+  end
+  
+  def opponent_turn(cpu_name, opponent, board)
+    column = opponent.next_move
+    puts "#{cpu_name}'s turn: #{column}"
+    result = board.play(column, Counter::YELLOW)
+    puts "\n" + board.to_s
+    
+    if result
+      puts "#{cpu_name} is the winner!!"
+      return true
+    end
+    
     return false
   end
   
